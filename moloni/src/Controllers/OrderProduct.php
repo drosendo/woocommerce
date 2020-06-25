@@ -250,11 +250,14 @@ class OrderProduct
      */
     private function setTaxes()
     {
-        $taxes = $this->product->get_taxes();
-        foreach ($taxes['subtotal'] as $taxId => $value) {
-            if (!empty($value)) {
-                $taxRate = preg_replace('/[^0-9.]/', '', WC_Tax::get_rate_percent($taxId));
-                if ((float)$taxRate > 0) {
+       $data = WC_Tax::get_rates_for_tax_class($this->product->get_tax_class());
+
+        $taxes = array_values($data);
+
+        foreach ($taxes as $key => $tax) {
+            if (!empty($tax)) {
+                $taxRate = $tax->tax_rate;
+                if ((float) $taxRate > 0) {
                     $this->taxes[] = $this->setTax($taxRate);
                 }
             }
